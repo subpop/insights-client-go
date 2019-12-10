@@ -3,11 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
 
-const inventoryHostURL = "https://cloud.redhat.com/api/inventory/v1/hosts?insights_id="
+const inventoryHostURL = "https://cert.cloud.redhat.com/api/inventory/v1/hosts?insights_id="
+const insightsSystemReportURL = "http://cert.cloud.redhat.com/api/insights/v1/system/%v/reports/"
 
 func show(cfg *config) error {
 	var err error
@@ -17,38 +16,31 @@ func show(cfg *config) error {
 		return err
 	}
 
-	id := getMachineID()
+	machineID := getMachineID()
 
-	req, err := http.NewRequest(http.MethodGet, inventoryHostURL+id, nil)
+	data, err := get(client, inventoryHostURL+machineID)
 	if err != nil {
 		return err
 	}
 
-	res, err := client.Do(req)
-	if err != nil {
-		return err
+	var result struct {
+		Results []map[string]interface{} `json:"results"`
 	}
-	defer res.Body.Close()
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
+	if err := json.Unmarshal(data, &result); err != nil {
 		return err
 	}
 
-	switch res.StatusCode {
-	case http.StatusOK:
-		break
-	default:
-		return &unexpectedResponseErr{statusCode: res.StatusCode, body: string(data)}
+	id, ok := result.Results[0]["id"].(string)
+	if !ok {
+		return &invalidKeyTypeErr{key: "id", val: result.Results[0]["id"]}
 	}
 
-	var system map[string]interface{}
-	err = json.Unmarshal(data, &system)
+	data, err = get(client, fmt.Sprintf(insightsSystemReportURL, id))
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(system)
+	fmt.Println(string(data))
 
 	return nil
 }
