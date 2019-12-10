@@ -11,19 +11,9 @@ import (
 func downloadURL(client *http.Client, URL, filePath string) error {
 	var err error
 
-	res, err := client.Get(URL)
+	data, err := get(client, URL)
 	if err != nil {
 		return err
-	}
-	defer res.Body.Close()
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return &unexpectedResponseErr{statusCode: res.StatusCode, body: string(data)}
 	}
 
 	f, err := os.Create(filePath)
@@ -38,4 +28,27 @@ func downloadURL(client *http.Client, URL, filePath string) error {
 	}
 
 	return nil
+}
+
+// get sends an HTTP request to URL using client and returns the response data
+// upon success.
+func get(client *http.Client, URL string) ([]byte, error) {
+	var err error
+
+	res, err := client.Get(URL)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, &unexpectedResponseErr{statusCode: res.StatusCode, body: string(data)}
+	}
+
+	return data, nil
 }
