@@ -32,12 +32,18 @@ func main() {
 			Name:  "collect",
 			Usage: "run data collection",
 			Action: func(c *cli.Context) error {
-				return collect(c.Bool("verbose"))
+				return collect(c.Bool("verbose"), c.String("core"))
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "verbose",
 					Usage: "increase output",
+				},
+				cli.StringFlag{
+					Name:      "core,c",
+					Usage:     "Use `FILE` when collecting",
+					Value:     corePath,
+					TakesFile: true,
 				},
 			},
 		},

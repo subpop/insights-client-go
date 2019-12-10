@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-func collect(verbose bool) error {
+func collect(verbose bool, corePath string) error {
 	cmd := exec.Command("/usr/bin/env",
 		"python",
 		"-m",
