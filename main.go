@@ -32,7 +32,13 @@ func main() {
 			Name:  "collect",
 			Usage: "run data collection",
 			Action: func(c *cli.Context) error {
-				return collect()
+				return collect(c.Bool("verbose"))
+			},
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "verbose",
+					Usage: "increase output",
+				},
 			},
 		},
 		{

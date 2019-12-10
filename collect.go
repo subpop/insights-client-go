@@ -5,12 +5,15 @@ import (
 	"os/exec"
 )
 
-func collect() error {
+func collect(verbose bool) error {
 	cmd := exec.Command("/usr/bin/env",
 		"python",
 		"-m",
 		"insights.collect",
 		"--compress")
+	if verbose {
+		cmd.Args = append(cmd.Args, "--verbose")
+	}
 	cmd.Env = []string{
 		"PATH=" + os.Getenv("PATH"),
 		"LANG=" + os.Getenv("LANG"),
