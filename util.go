@@ -17,7 +17,7 @@ func getMachineID() string {
 		if err != nil {
 			log.Fatal(err)
 		}
-		file, err := os.Open(machineIDFilePath)
+		file, err := os.Create(machineIDFilePath)
 		if err != nil {
 			log.Fatal(err)
 		}
