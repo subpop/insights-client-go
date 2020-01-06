@@ -19,15 +19,17 @@ func newClient(certFile, keyFile string) (*http.Client, error) {
 		return nil, err
 	}
 	caCertPool.AppendCertsFromPEM(caCert)
-	tlsConfig := tls.Config{
-		RootCAs: caCertPool,
-	}
 
 	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
 		return nil, err
 	}
-	tlsConfig.Certificates = []tls.Certificate{cert}
+
+	tlsConfig := tls.Config{
+		RootCAs:      caCertPool,
+		Certificates: []tls.Certificate{cert},
+		MaxVersion:   tls.VersionTLS12, // cloud.redhat.com appears to exhibit this openssl bug https://github.com/openssl/openssl/issues/9767
+	}
 
 	tlsConfig.BuildNameToCertificate()
 	transport := http.Transport{
