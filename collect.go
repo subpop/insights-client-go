@@ -6,8 +6,7 @@ import (
 )
 
 func collect(verbose bool, corePath string) error {
-	cmd := exec.Command("/usr/bin/env",
-		"python",
+	cmd := exec.Command("/usr/libexec/platform-python",
 		"-m",
 		"insights.collect",
 		"--compress")
