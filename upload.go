@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const uploadURL = "https://cloud.redhat.com/api/ingress/v1/upload"
+const uploadURL = "https://cert.cloud.redhat.com/api/ingress/v1/upload"
 
 // upload submits archivePath to the Insights service for analysis.
 func upload(cfg *config, archivePath string) error {
